@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AnimeStream</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-image: url('https://wallpaperaccess.com/full/134584.jpg');
+      background-size: cover;
+      background-position: center;
+      color: white;
+    }
+    .anime-card img {
+      height: 300px;
+      object-fit: cover;
+    }
+    .adsterra {
+      width: 100%;
+      height: 90px;
+      background-color: #222;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .search-bar {
+      margin-bottom: 20px;
+    }
+    .nav-link {
+      color: white;
+    }
+    .search-btn {
+      background-color: #FF9800;
+      color: white;
+      border-color: #FF9800;
+      height: 40px;
+    }
+    .btn-secondary {
+      background-color: red;
+      border-color: red;
+      margin-left: 10px;
+    }
+    .btn-primary {
+      margin-right: 10px;
+    }
+    .anime-recommendation {
+      margin-top: 40px;
+    }
+    .card-body .btn-secondary {
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">AnimeStream</a>
+      <ul class="nav">
+        <li class="nav-item"><a class="nav-link" href="#" onclick="location.reload()">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#anime">Anime</a></li>
+        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <h1 class="text-center mb-4">AnimeStream</h1>
+    <div class="adsterra"><script type='text/javascript' src='//pl26010658.effectiveratecpm.com/0b/63/d2/0b63d2ced85d17060321d3246e6c1ecd.js'></script></div>
+
+    <div class="input-group mb-4">
+      <input type="text" id="search" class="form-control search-bar" placeholder="Cari anime...">
+      <button class="btn search-btn" onclick="searchAnime()">Search</button>
+    </div>
+
+    <div id="anime-list" class="row row-cols-1 row-cols-md-4 g-4"></div>
+
+    <h2 class="text-center anime-recommendation">Rekomendasi Anime</h2>
+    <div id="recommended-anime" class="row row-cols-1 row-cols-md-4 g-4"></div>
+
+    <div class="adsterra"><script type='text/javascript' src='//pl26010658.effectiveratecpm.com/0b/63/d2/0b63d2ced85d17060321d3246e6c1ecd.js'></script></div>
+
+    <section id="anime" class="mt-5">
+      <h2>Daftar Anime</h2>
+      <p>Kami menampilkan daftar anime berdasarkan genre, rating, dan anime yang sedang trending. Data diambil dari API Jikan.</p>
+    </section>
+
+    <section id="about" class="mt-5">
+      <h2>Tentang AnimeStream</h2>
+      <p>Platform ini dibuat untuk mempermudah penggemar anime menonton anime favorit mereka. Kami menggunakan Jikan API untuk mendapatkan data anime yang akurat dan up-to-date.</p>
+      <p>Tim Pengembang: Anime Lover Team ❤️</p>
+    </section>
+  </div>
+
+  <footer class="text-center py-4">
+    <p>&copy; 2025 AnimeStream | Dibuat dengan ❤️ untuk penggemar anime</p>
+  </footer>
+
+  <script>
+    let firstClick = true;
+
+    async function fetchAnime(query = '') {
+      const animeList = document.getElementById('anime-list');
+      animeList.innerHTML = '';
+
+      try {
+        const response = await fetch(`https://api.jikan.moe/v4/anime?q=${query}`);
+        if (!response.ok) throw new Error('API Error');
+        const data = await response.json();
+
+        if (!data || !data.data || data.data.length === 0) {
+          animeList.innerHTML = '<p class="text-center">Anime tidak ditemukan.</p>';
+          return;
+        }
+
+        data.data.forEach(async anime => {
+          const videoResponse = await fetch(`https://api.jikan.moe/v4/anime/${anime.mal_id}/videos`);
+          const videoData = await videoResponse.json();
+          const videoUrl = videoData.data?.episodes?.[0]?.url || '#';
+
+          animeList.innerHTML += `
+            <div class="col">
+              <div class="card anime-card bg-dark text-white">
+                <img src="${anime.images.jpg.image_url}" class="card-img-top" alt="${anime.title}">
+                <div class="card-body">
+                  <h5 class="card-title">${anime.title}</h5>
+                  <a href="${firstClick ? 'https://www.effectiveratecpm.com/j2v8y3xeu?key=6ebeb5f7d3ccfb6d002d8cad381be662' : anime.url}" class="btn btn-primary" target="_blank" onclick="handleDetailClick()">Detail Anime</a>
+                  <a href="https://shrinkme.ink/ChfRdgzi" class="btn btn-secondary" target="_blank">Tonton Anime</a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      } catch (error) {
+        animeList.innerHTML = '<p class="text-center">Terjadi kesalahan saat mengambil data.</p>';
+      }
+    }
+
+    async function fetchRecommendedAnime() {
+      const recommendedAnime = document.getElementById('recommended-anime');
+      try {
+        const response = await fetch('https://api.jikan.moe/v4/top/anime');
+        const data = await response.json();
+        data.data.slice(0, 8).forEach(anime => {
+          recommendedAnime.innerHTML += `
+            <div class="col">
+              <div class="card anime-card bg-dark text-white">
+                <img src="${anime.images.jpg.image_url}" class="card-img-top" alt="${anime.title}">
+                <div class="card-body">
+                  <h5 class="card-title">${anime.title}</h5>
+                  <a href="${anime.url}" class="btn btn-primary" target="_blank">Detail Anime</a>
+                  <a href="https://shrinkme.ink/ChfRdgzi" class="btn btn-secondary" target="_blank">Tonton Anime</a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      } catch (error) {
+        console.error('Error fetching recommended anime:', error);
+      }
+    }
+
+    function searchAnime() {
+      const query = document.getElementById('search').value.trim();
+      if (query) {
+        fetchAnime(query);
+      }
+    }
+
+    function handleDetailClick() {
+      firstClick = false;
+    }
+
+    document.getElementById('search').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        searchAnime();
+      }
+    });
+
+    fetchRecommendedAnime();
+  </script>
+</body>
+</html>

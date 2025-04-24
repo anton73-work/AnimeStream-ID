@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://anime-stream-id-2eec.vercel.app/sitemap.xml
+Sitemap: https://anime-stream-id.vercel.app/sitemap.xml
